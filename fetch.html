@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>API Fetch</title>
+</head>
+
+<body>
+    <h1>Ejemplo de fetch</h1>
+    <h3>omar gutierrez cortes</h3>
+
+    <div id="contenidoNuevo"></div>
+    <br>
+    <reg-01></reg-01>
+    <script src="js/webcomponent.js"></script>
+    <script>
+        // ---------GET-----------
+        // Se necesita estar logueado para que funcione!
+        var cont = document.getElementById('contenidoNuevo');
+        var urlObtener = 'http://192.168.1.11:9000/api/usuario/perfil';
+        fetch(urlObtener, {
+            method: 'GET', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${localStorage.token}`
+            }
+
+        }).then(res => res.json())
+            .catch(error => console.error('Error Fetch:', error))
+            .then(response => {
+
+
+                cont.innerHTML += `
+                        
+                        <h1>${response.usuario.nombreUsuario}</h1>
+                        <h3>${response.usuario.tipoUsuario}</h3>      
+                    
+                        `;
+
+            });
+        //------------------------
+
+    </script>
+
+    <script>
+        // ---------POST-----------
+        const formLogin = document.querySelector('#form-login')
+        var baner = document.getElementById("baner");
+
+        formLogin.addEventListener('submit', event => {
+            event.preventDefault()
+            const formData = new FormData(formLogin)
+            //console.log(formData.get('email'))
+            //console.log(formData.get('password'))
+            var data = {
+                email: formData.get('email'),
+                nombreUsuario: formData.get('nombreUsuario'),
+                password: formData.get('password'),
+                idprototipo: formData.get('idprototipo'),
+                tipoUsuario: formData.get('tipoUsuario')
+            }
+           
+            var url = 'http://192.168.1.11:9000/api/usuario/reg';
+
+
+            fetch(url, {
+                method: 'POST', // or 'PUT'
+                body: JSON.stringify(data), // data can be `string` or {object}!
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+
+            }).then(res => res.json())
+                .catch(error => console.error('Error Fetch:', error))
+                .then(response => {
+
+                    console.log('Success:', `Registro correcto con token: ${response.token}`)
+                    baner.innerHTML = `
+                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                            <strong>Mensaje!</strong> ${response.message}.
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                    `
+                });
+
+        })
+        //-------------------------
+
+    </script>
+</body>
+
+</html>
